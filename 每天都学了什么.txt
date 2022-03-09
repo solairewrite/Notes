@@ -20,11 +20,17 @@
         还是流程图更加直观,文章要有简单易懂的流程图
         VSCode的章节排版看的很难受,网页上渲染的会好看很多,但是要层次清晰的话,还是要有目录和索引
 
-2022-03-7      星期一
+2022-03-07      星期一
     1,GAS中文文档,GA,GC
     2,AI模块,请求运行行为树 UBehaviorTreeComponent::RequestExecution 开了个头
     
-2022-03-08 星期二
+2022-03-08      星期二
     1,GAS中文文档,预测
         预测跟GE关联很大,GE的代码太多了,预测的绑定和回滚没找到位置,看的很累
     2,AI模块,RequestExecution回顾文章
+
+2022-03-09      星期三
+    1,GAS,预测
+        今天搞清楚了GA中预测键的流程,GE的预测,有种恍然大悟的感觉
+    2,AI模块,RequestExecution,关于Decorator的Abort搞的很乱,没理解,很痛苦
+    3,git,发现腾讯工蜂lfs文件丢失了,浪费了好久google,换回github
