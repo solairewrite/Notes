@@ -1,0 +1,142 @@
+# UnrealTournament_02
+> 创建PlayerController  
++ 调用 AGameModeBase::PostLogin
+```
+bool ULocalPlayer::SpawnPlayActor()
+{
+    PlayerController = InWorld->SpawnPlayActor(this, ROLE_SimulatedProxy, ...);
+}
+```
+
+```
+APlayerController* UWorld::SpawnPlayActor(UPlayer* NewPlayer, ENetRole RemoteRole, ...)
+{
+    AGameModeBase* GameMode = GetAuthGameMode();
+
+    APlayerController* const NewPlayerController = GameMode->Login(NewPlayer, RemoteRole, *InURL.Portal, Options, UniqueId, Error);
+
+    GameMode->PostLogin(NewPlayerController);
+}
+```
+
+```
+APlayerController* AGameModeBase::Login()
+{
+    APlayerController* NewPlayerController = SpawnPlayerController(InRemoteRole, FVector::ZeroVector, FRotator::ZeroRotator);
+}
+
+APlayerController* AGameModeBase::SpawnPlayerController()
+{
+    APlayerController* NewPC = GetWorld()->SpawnActor<APlayerController>(PlayerControllerClass, SpawnLocation, SpawnRotation, SpawnInfo);
+
+    // 创建PlayerState
+    UGameplayStatics::FinishSpawningActor(NewPC, FTransform(SpawnRotation, SpawnLocation));
+}
+```
+
+> 创建PlayerState
+```
+void AActor::FinishSpawning()
+{
+    PostActorConstruction();
+}
+
+void AActor::PostActorConstruction()
+{
+    PreInitializeComponents();
+
+    InitializeComponents();
+
+    PostInitializeComponents();
+}
+```
+
+```
+void APlayerController::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+    InitPlayerState();
+}
+
+void AController::InitPlayerState()
+{
+    PlayerState = World->SpawnActor<APlayerState>(GameMode->PlayerStateClass, SpawnInfo );
+}
+```
+
+### 5.创建Pawn
++ (1) GameMode::Tick中检测能否开始游戏
+```
+void AGameMode::Tick(float DeltaSeconds)
+{
+	if (GetMatchState() == MatchState::WaitingToStart)
+	{
+		if (ReadyToStartMatch())
+		{
+			StartMatch();
+		}
+	}
+}
+
+void AUTGameMode::StartMatch()
+{
+    SetMatchState(MatchState::InProgress);
+}
+```
+
++ (2) 切换MatchState: InProgress
+```
+void AUTGameMode::SetMatchState(FName NewState)
+{
+    CallMatchStateChangeNotify();
+}
+
+void AUTGameMode::CallMatchStateChangeNotify()
+{
+	else if (MatchState == MatchState::InProgress)
+	{
+		HandleMatchHasStarted();
+	}
+}
+```
+
++ (3) 遍历Controller创建Pawn
+```
+void AGameMode::HandleMatchHasStarted()
+[
+    for( FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator )
+    {
+        APlayerController* PlayerController = Iterator->Get();
+        RestartPlayer(PlayerController);
+    }
+]
+```
+
++ (4) 查找玩家出生点,在出生点Spawn Pawn
+```
+void AGameModeBase::RestartPlayer(AController* NewPlayer)
+{
+    AActor* StartSpot = FindPlayerStart(NewPlayer);
+
+    RestartPlayerAtPlayerStart(NewPlayer, StartSpot);
+}
+```
+
+```
+void AGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
+{
+    NewPlayer->SetPawn(SpawnDefaultPawnFor(NewPlayer, StartSpot));
+
+    // 在UT中,这里创建了武器
+    FinishRestartPlayer(NewPlayer, SpawnRotation);
+}
+```
+
+```
+APawn* AGameModeBase::SpawnDefaultPawnAtTransform_Implementation()
+{
+    UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer);
+	APawn* ResultPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo);
+}
+```

@@ -1,0 +1,7 @@
+# UE4网络同步 13 大世界同步方案ReplicationGraph
+ReplicationGraph可以大大减少Actor的遍历与同步,适合对大世界场景进行网络同步优化  
+
+服务器在同步Actor时,会遍历场景中所有标记Replicated的Actor,但实际上与玩家距离远的不需要遍历  
+
+ReplicationGraph将场景栅格化,每个Actor设置同步相关的CullDistance,把Actor放到所有与他有关的格子里  
+这样每个格子就会记录需要同步的Actor,当玩家进入这个格子时,仅遍历相关的Actor  
