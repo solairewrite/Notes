@@ -21,6 +21,11 @@ GAS的文章主要分析源码,绘制uml
 不在意大家都已经分析过的基础文档  
 字典直接可查,重在理解原理  
 
+0. UAbilityTask_WaitTargetData
+wait input release
+
+0. 输入绑定  
+
 1. 应用GE UAbilitySystemComponent::ApplyGameplayEffectSpecToSelf(),GE对属性的修改  
 
 2. 服务器激活GA成功时,通知客户端更新ActivationInfo
@@ -49,7 +54,7 @@ UAbilitySystemComponent::InternalServerTryActivateAbility()
 
 ## 疑问
 
-2. Task的Service先于Task执行吗
+2. Task的Service先于Task执行吗,是的
 
 3. UBehaviorTreeComponent::UpdateInstanceId 里面的 InstanceId.Path 是逆序吗
     这个path可能只是bool operator==(const FBehaviorTreeInstanceId& Other)用来判断两颗子树是不是同一颗
