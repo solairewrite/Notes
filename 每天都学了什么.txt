@@ -34,3 +34,10 @@
         今天搞清楚了GA中预测键的流程,GE的预测,有种恍然大悟的感觉
     2,AI模块,RequestExecution,关于Decorator的Abort搞的很乱,没理解,很痛苦
     3,git,发现腾讯工蜂lfs文件丢失了,浪费了好久google,换回github
+
+2022-03-10      星期四
+    1,GAS,预测初版结束,大体理清了GE的预测,但是细节的应用GE和撤销GE没有深究
+    2,GAS,Target开了个头
+    3,AI模块,RequestExecution,关于Decorator的Abort,还是没弄明白,但是有了一些猜测
+        已经消耗了很多时间,如果还是不理解,就先略过
+
