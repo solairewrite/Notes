@@ -14,7 +14,7 @@ UObject实现了哪些功能
 ### 1.AI模块  
 1. 系统看`UBehaviorTreeComponent::OnTaskFinished`
 
-2. 系统看行为树组件
+2. `DoDecoratorsAllowExecution`, `FindCommonParent`
 
 ### 2.GAS插件  
 GAS的文章主要分析源码,绘制uml  

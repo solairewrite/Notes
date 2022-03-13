@@ -41,3 +41,14 @@
     3,AI模块,RequestExecution,关于Decorator的Abort,还是没弄明白,但是有了一些猜测
         已经消耗了很多时间,如果还是不理解,就先略过
 
+2022-03-11      星期五
+    1,GAS,TargetData
+    
+2022-03-12      星期六
+    1,AI模块,RequestExecution,还是没看懂
+
+2022-03-13      星期日
+    1,AI模块,RequestExecution,还是不理解bSwitchToHigherPriority到底是怎么用的
+        先把初版的写成md,决定不纠结了,也许看到后面慢慢就知道了
+        说不定就是应该先放下不懂的地方,对全局有了了解之后,后面再来回顾就会理解
+        
