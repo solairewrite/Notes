@@ -1,4 +1,3 @@
-# 配置UE4环境
 ## 插件
 VAX  
 UnrealVS  
@@ -8,7 +7,7 @@ Highlight
 Close Tabs To Right  
 UTF-8 / FileEncoding  
 
-## 配置
+## 配置UE4环境
 
 > 解决方案配置: DebugGame Editor  
 
