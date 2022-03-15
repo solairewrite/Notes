@@ -56,3 +56,6 @@
 2022-03-14      星期一
     1,AI模块,回顾ProcessExecutionRequest
     
+2022-03-15      星期二
+    1,AI模块,记录UBehaviorTreeComponent::DeactivateUpTo
+        前后好多代码看不懂,深感无力,心里难受,看的很灰心
