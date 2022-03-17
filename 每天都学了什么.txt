@@ -59,3 +59,11 @@
 2022-03-15      星期二
     1,AI模块,记录UBehaviorTreeComponent::DeactivateUpTo
         前后好多代码看不懂,深感无力,心里难受,看的很灰心
+
+2022-03-16      星期三
+    1,AI模块,看代码UBTCompositeNode::FindChildToExecute
+
+2022-03-17      星期四
+    1,AI模块,完成ProcessExecutionRequest
+        现在看感觉前几天纠结的bSwitchToHigherPriority没那么重要了,因为搜索可执行节点主要是ExecutionRequest.ExecuteNode
+    
