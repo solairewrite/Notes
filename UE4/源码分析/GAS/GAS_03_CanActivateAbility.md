@@ -1,4 +1,4 @@
-# CanActivateAbility
+# GAS_03_CanActivateAbility
 尝试激活一个技能时,调用此函数,判断技能能否被激活  
 ```
 // 尝试激活技能

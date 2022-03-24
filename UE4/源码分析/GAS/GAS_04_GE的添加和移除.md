@@ -1,4 +1,4 @@
-# GE的添加和移除
+# GAS_04_GE的添加和移除
 
 > 当前所有激活的GE  
 FActiveGameplayEffectsContainer UAbilitySystemComponent::ActiveGameplayEffects;  

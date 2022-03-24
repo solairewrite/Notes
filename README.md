@@ -7,6 +7,7 @@ AI源码
 slua的原理,UObject怎么传入lua  
 UObject实现了哪些功能  
 寻路,光照  
+移动
 
 ## TODO
 ### GAS插件  
@@ -42,3 +43,6 @@ UAbilitySystemComponent::InternalServerTryActivateAbility()
 5. 内置GA
 
 6. FActiveGameplayEffect::PostReplicatedAdd 堆栈
+
+### 移动
+`UCharacterMovementComponent::ApplyRootMotionSource`

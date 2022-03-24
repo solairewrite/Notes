@@ -1,4 +1,4 @@
-# 预测
+# GAS_06_Prediction
 ## 创建`FPredictionKey`
 1. 客户端执行GA时,会创建辅助结构体`FScopedPredictionWindow`,在它的(客户端版本)构造函数中,为`int16 FPredictionKey::Current`赋了新值  
 随后调用`CallServerTryActivateAbility`通过RPC将PredictionKey传给服务器  

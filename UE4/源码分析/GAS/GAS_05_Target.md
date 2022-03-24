@@ -1,4 +1,4 @@
-# Target
+# GAS_05_Target
 ## Character初始化时
 1. 绑定ASC的输入确认事件到玩家输入
 ```
