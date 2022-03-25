@@ -25,7 +25,7 @@
 
 可以不重写`Activate()`  
 实现`BeginSpawningActor()`和`FinishSpawningActor()`  
-这两个函数应该是蓝图自动创建的  
+这两个函数应该是蓝图自动调用的  
 
 `BeginSpawningActor`应调用`SpawnActorDeferred`来生成Actor,并在这里初始化Actor的变量  
 引擎自动生成的字节码会将`expose on spawn`参数暴露给蓝图(源码注释,没亲测)  

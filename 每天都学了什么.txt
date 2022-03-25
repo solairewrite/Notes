@@ -123,4 +123,7 @@
     1,GAS,看各种内置的AbilityTask
         基本上每个Task都是通过绑定各种ASC的代理实现的
     
+2022-03-25      星期五
+    1,GAS,看各种内置的AbilityTask
+    2,整理之前写的激活GA,TargetData,Prediction的文档
     

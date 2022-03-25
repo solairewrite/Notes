@@ -1,4 +1,31 @@
 # GAS_06_Prediction
+## 目录
+- [GAS_06_Prediction](#gas_06_prediction)
+	- [目录](#目录)
+	- [预测机制简介](#预测机制简介)
+	- [创建`FPredictionKey`](#创建fpredictionkey)
+	- [服务器给客户端反馈GA是否激活成功](#服务器给客户端反馈ga是否激活成功)
+	- [客户端创建预测的GE](#客户端创建预测的ge)
+	- [收到服务器返回时,客户端如何处理预测的GE](#收到服务器返回时客户端如何处理预测的ge)
+		- [如果激活失败](#如果激活失败)
+		- [如果激活成功](#如果激活成功)
+	- [预测蒙太奇](#预测蒙太奇)
+
+## 预测机制简介
+对于GA中应用的GE,客户端会直接创建一个预测版的GE的实例,而无需服务器先验证成功  
+如果服务器验证失败,客户端删除预测版的GE实例  
+如果服务器验证成功,客户端使用服务器同步过来的GE,删除预测的GE实例  
+
+通过`FPredictionKey`来实现,里面包含一个整数(可以理解为版本号),GE激活时和这个Key绑定  
+如果后面服务器验证失败,就通过这个Key找到对应的GE进行删除  
+
+两个跟PredictionKey绑定的关键的代理:  
+1. `RejectedDelegates`服务器验证失败时客户端广播  
+2. `CaughtUpDelegates`服务器的PredictionKey同步给客户端时,客户端广播,即无论验证成功/失败都会广播  
+
+![](Images/Prediction.png)  
+<center>Prediction</center>
+
 ## 创建`FPredictionKey`
 1. 客户端执行GA时,会创建辅助结构体`FScopedPredictionWindow`,在它的(客户端版本)构造函数中,为`int16 FPredictionKey::Current`赋了新值  
 随后调用`CallServerTryActivateAbility`通过RPC将PredictionKey传给服务器  
@@ -10,8 +37,6 @@
 
 2. 无论激活成功或者失败,在`FScopedPredictionWindow`析构时,都会将当前的PredictionKey同步给客户端,客户端会调用`FReplicatedPredictionKeyItem::OnRep`  
 函数中会广播`FPredictionKeyDelegates::FDelegates::CaughtUpDelegates`,这个代理同样关联了当前的PredictionKey  
-
-`FReplicatedPredictionKeyMap UAbilitySystemComponent::ReplicatedPredictionKeyMap;`,注释上说他是最后一个同步的属性,以确保OnRep的顺序  
 
 ## 客户端创建预测的GE
 创建新的`FActiveGameplayEffect`时会传入PredictionKey,将GE与PredictionKey关联  
@@ -40,17 +65,7 @@ GAS中激活的GE存储在 `FActiveGameplayEffectsContainer UAbilitySystemCompon
 ```
 void FActiveGameplayEffect::PostReplicatedAdd(const struct FActiveGameplayEffectsContainer &InArray)
 {
-   	bool ShouldInvokeGameplayCueEvents = true;
-	if (PredictionKey.IsLocalClientKey())
-	{
-		// 如果客户端已经预测过了,那么就不再重复调用GC
-		if (InArray.HasPredictedEffectWithPredictedKey(PredictionKey))
-		{
-			ShouldInvokeGameplayCueEvents = false;
-		}
-	}
-
-    // 添加GE(修改Attribute,tag等)
+   	// 添加GE(修改Attribute,tag等)
     const_cast<FActiveGameplayEffectsContainer&>(InArray).InternalOnActiveGameplayEffectAdded(*this);
 }
 ```
