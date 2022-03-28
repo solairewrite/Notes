@@ -1,48 +1,24 @@
 # UE4开发笔记
-## 要添加的知识点
+## 已学习引擎模块
+[AI](UE4/源码分析/AI/AI_01_大纲.md)  
+[GAS](UE4/源码分析/GAS/GAS_01_大纲.md)  
+
+## 要添加的模块
+ulua,slua的原理,UObject怎么传入lua  
 渲染管线shader  
 帧同步  
 性能优化  
-AI源码  
-slua的原理,UObject怎么传入lua  
 UObject实现了哪些功能  
 寻路,光照  
-移动
+移动  
 
 ## TODO
-### GAS插件  
-GAS的文章主要分析源码,绘制uml  
-不在意大家都已经分析过的基础文档  
-字典直接可查,重在理解原理  
+协程  
 
-0. UAbilityTask_WaitTargetData
-wait input release
+`FLatentActionManager`  
 
-0. 输入绑定  
-
-1. 应用GE UAbilitySystemComponent::ApplyGameplayEffectSpecToSelf(),GE对属性的修改  
-
-2. 服务器激活GA成功时,通知客户端更新ActivationInfo
-```
-UAbilitySystemComponent::InternalTryActivateAbility()
-{
-    ClientActivateAbilitySucceed(Handle, ActivationInfo.GetActivationPredictionKey());
-}
-```
-
-3. 服务器激活GA失败时,终止客户端的GA,并撤销所有预测的修改
-```
-UAbilitySystemComponent::InternalServerTryActivateAbility()
-{
-    ClientActivateAbilityFailed(Handle, PredictionKey.Current);
-}
-```
-
-4. 被动技能重写UGameplayAbility::OnAvatarSet
-
-5. 内置GA
-
-6. FActiveGameplayEffect::PostReplicatedAdd 堆栈
+### 蓝图节点
+`UK2Node_LatentGameplayTaskCall`  
 
 ### 移动
-`UCharacterMovementComponent::ApplyRootMotionSource`
+`UCharacterMovementComponent::ApplyRootMotionSource`  

@@ -12,6 +12,8 @@
 		- [2.`CheckCost`检测技能费用](#2checkcost检测技能费用)
 		- [3.`DoesAbilitySatisfyTagRequirements`检测Tag](#3doesabilitysatisfytagrequirements检测tag)
 		- [4.`K2_CanActivateAbility`蓝图检测是否能激活](#4k2_canactivateability蓝图检测是否能激活)
+	- [GA激活时`UGameplayAbility::CallActivateAbility`](#ga激活时ugameplayabilitycallactivateability)
+	- [GA结束时`UGameplayAbility::EndAbility`](#ga结束时ugameplayabilityendability)
 
 ## 激活GA的流程
 调用`TryActivateAbilityByClass`,激活一个技能时,对于LocalPredicted,bAllowRemoteActivation为true的情况  
@@ -100,3 +102,61 @@ OptionalRelevantTags: Ability.Fail.TagsMissing (对于上面3)
 
 ### 4.`K2_CanActivateAbility`蓝图检测是否能激活
 蓝图中判断技能是否可以激活,如果前面的CD,Cost,Tag检测失败,这里不会被执行  
+
+## GA激活时`UGameplayAbility::CallActivateAbility`
+```
+void UGameplayAbility::CallActivateAbility(...)
+{
+	// 添加ActivationOwnedTags,技能结束时移除,这个只会在服务器和所属的客户端加,其它客户端不会加
+	Comp->AddLooseGameplayTags(ActivationOwnedTags);
+
+	// ASC广播技能激活代理
+	UAbilitySystemComponent::AbilityActivatedCallbacks.Broadcast(Ability);
+
+	// BlockAbilitiesWithTag阻挡其他技能,技能结束时取消阻挡
+	// CancelAbilitiesWithTag取消其他技能
+	Comp->ApplyAbilityBlockAndCancelTags(AbilityTags, this, true, BlockAbilitiesWithTag, true, CancelAbilitiesWithTag);
+
+	// 最后执行蓝图节点
+	K2_ActivateAbility();
+}
+```
+
+## GA结束时`UGameplayAbility::EndAbility`
+```
+void UGameplayAbility::EndAbility(
+	..., 
+	bool bReplicateEndAbility, // 是否向远端RPC发送结束技能指令,如果是被RPC通知结束技能的,值为false,避免无限循环
+	bool bWasCancelled
+	)
+{
+	// 先执行蓝图节点
+	K2_OnEndAbility(bWasCancelled);
+
+	// 移除异步函数和定时器
+	MyWorld->GetLatentActionManager().RemoveActionsForObject(this);
+	MyWorld->GetTimerManager().ClearAllTimersForObject(this);
+
+	// 结束所有AbilityTask
+	for (int32 TaskIdx = ActiveTasks.Num() - 1; TaskIdx >= 0 && ActiveTasks.Num() > 0; --TaskIdx)
+	{
+		UGameplayTask* Task = ActiveTasks[TaskIdx];
+		Task->TaskOwnerEnded();
+	}
+
+	// RPC通知远端调用EndAbility
+	if (bReplicateEndAbility)
+	{
+		AbilitySystemComponent->ReplicateEndOrCancelAbility(Handle, ActivationInfo, this, false);
+	}
+
+	// 移除ActivationOwnedTags
+	AbilitySystemComponent->RemoveLooseGameplayTags(ActivationOwnedTags);
+
+	// 取消对其它技能的阻挡,其实就是从ASC的BlockedAbilityTags中移除此GA的BlockAbilitiesWithTag
+	AbilitySystemComponent->ApplyAbilityBlockAndCancelTags(AbilityTags, this, false, BlockAbilitiesWithTag, false, CancelAbilitiesWithTag);
+
+	// ASC广播技能结束代理
+	UAbilitySystemComponent::AbilityEndedCallbacks.Broadcast(Ability);
+}
+```
