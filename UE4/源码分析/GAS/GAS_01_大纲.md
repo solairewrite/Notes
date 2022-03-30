@@ -11,7 +11,8 @@
 
 [GAS_02_AbilityTask](GAS_02_AbilityTask.md)  
 [GAS_03_激活GA](GAS_03_激活GA.md)  
-[GAS_04_GE](GAS_04_GE.md)  
+[GAS_04_GE_01_应用GE](GAS_04_GE_01_应用GE.md)  
+[GAS_04_GE_02_修改属性](GAS_04_GE_02_修改属性.md)  
 [GAS_05_TargetData](GAS_05_TargetData.md)  
 [GAS_06_Prediction](GAS_06_Prediction.md)  
 [GAS_07_GameplayTag](GAS_07_GameplayTag.md)  
@@ -23,3 +24,8 @@
 
 ## TODO
 AbilityTask与`K2Node_LatentAbilityCall`相关  
+周期性GE的执行  
+基于属性的计算  
+PreAttributeChange断点  
+中文文档项目的伤害计算  
+编辑器中查看FGameplayEffectExecutionDefinition::CalculationModifiers是否有赋值  
