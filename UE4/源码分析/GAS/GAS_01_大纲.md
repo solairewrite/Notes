@@ -27,5 +27,4 @@ AbilityTask与`K2Node_LatentAbilityCall`相关
 周期性GE的执行  
 基于属性的计算  
 PreAttributeChange断点  
-中文文档项目的伤害计算  
-编辑器中查看FGameplayEffectExecutionDefinition::CalculationModifiers是否有赋值  
+GE的移除  

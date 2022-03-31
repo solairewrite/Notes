@@ -9,18 +9,25 @@
                 - [`InternalUpdateNumericalAttribute`广播属性改变代理,设置CurrentValue](#internalupdatenumericalattribute广播属性改变代理设置currentvalue)
                     - [`SetNumericValueChecked`修改属性的CurrentValue](#setnumericvaluechecked修改属性的currentvalue)
     - [`UGameplayEffectExecutionCalculation::Execute`根据`UGameplayEffect::Executions`修改属性](#ugameplayeffectexecutioncalculationexecute根据ugameplayeffectexecutions修改属性)
+        - [定义要捕捉哪些属性](#定义要捕捉哪些属性)
+        - [Tag捕捉](#tag捕捉)
+        - [获取捕捉的属性值](#获取捕捉的属性值)
+        - [获取根据Tag动态设置的值](#获取根据tag动态设置的值)
+        - [参数OutExecutionOutput返回要修改的属性,后面调用`InternalExecuteMod`修改属性值](#参数outexecutionoutput返回要修改的属性后面调用internalexecutemod修改属性值)
 
 ## 简介
-`InternalExecuteMod`,根据`UGameplayEffect::Modifiers`修改属性  
+1. `UGameplayEffect::Modifiers`调用`InternalExecuteMod`修改属性  
 
-一些生命周期:  
+2. `UGameplayEffect::Executions`调用`UGameplayEffectExecutionCalculation::Execute`获取要修改的属性  
+    再调用`InternalExecuteMod`修改这些属性  
+
+一些生命周期(按执行顺序):  
 
 + `PreGameplayEffectExecute`: Clamp操作,也可返回false取消对属性的修改  
-+ `PreAttributeBaseChange`: 没什么用  
 + `PreAttributeChange`: Clamp操作  
 + `PostGameplayEffectExecute`: 可以在这里写各种游戏逻辑,比如Clamp,为每一点伤害加分  
 
-![](Images/Modifiers修改属性.png)
+![](Images/GE修改属性.png)
 
 ## `InternalExecuteMod`,根据`UGameplayEffect::Modifiers`修改属性
 ```
@@ -125,3 +132,84 @@ void FGameplayAttribute::SetNumericValueChecked(float& NewValue, class UAttribut
 ```
 
 ## `UGameplayEffectExecutionCalculation::Execute`根据`UGameplayEffect::Executions`修改属性
+参考GAS中文文档项目的GDDamageExecCalculation.cpp  
+
+```
+void UGDDamageExecCalculation::Execute_Implementation(
+    const FGameplayEffectCustomExecutionParameters & ExecutionParams, 
+    OUT FGameplayEffectCustomExecutionOutput & OutExecutionOutput // 引用参数,返回要修改的属性
+    ) const
+{
+    // 获取捕捉的Target护甲值
+    float Armor = 0.0f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef, EvaluationParameters, Armor);
+	Armor = FMath::Max<float>(Armor, 0.0f);
+
+    // 获取捕捉的Source原始伤害值
+    float Damage = 0.0f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageDef, EvaluationParameters, Damage);
+    
+    // Data.Damage应该是额外动态设置的附加伤害
+	Damage += FMath::Max<float>(Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), false, -1.0f), 0.0f);
+
+    // 根据自定义公式计算最终伤害FinalDamage
+
+    // 返回要修改的属性值
+    // 后面会调用InternalExecuteMod,使用和UGameplayEffect::Modifiers一样的方法修改属性
+    OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(DamageStatics().DamageProperty, EGameplayModOp::Additive, FinalDamage));
+
+    // 可以在这里广播自定义代理
+}
+```
+
+### 定义要捕捉哪些属性
+参考前一节  
+构造函数中,将定义好的要捕捉的属性加入RelevantAttributesToCapture  
+创建GE时,就会捕捉这些属性存到`FGameplayEffectSpec::CapturedRelevantAttributes`里面的AttributeAggregator
+
+```
+UGDDamageExecCalculation::UGDDamageExecCalculation()
+{
+	RelevantAttributesToCapture.Add(DamageStatics().DamageDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
+}
+```
+
+### Tag捕捉
+参考前一节  
+`FGameplayEffectSpec::CapturedSourceTags`包含GE的Tag,SourceASC的Tag,GA的Tag(如果由GA创建)  
+`FGameplayEffectSpec::CapturedTargetTags`包含TargetASC的Tag  
+
+### 获取捕捉的属性值
+`AttemptCalculateCapturedAttributeMagnitude`,函数蛮复杂的,有根据捕捉到的Tag对属性值做各种运算.我们应该用不到  
+示例项目的用法很简单,就是直接获取`FGameplayEffectSpec::CapturedRelevantAttributes`里面的AttributeAggregator存储的值,即属性的BaseValue  
+
+### 获取根据Tag动态设置的值
+`FGameplayEffectSpec::GetSetByCallerMagnitude`  
+
+### 参数OutExecutionOutput返回要修改的属性,后面调用`InternalExecuteMod`修改属性值
+```
+void FActiveGameplayEffectsContainer::ExecuteActiveEffectsFrom(FGameplayEffectSpec &Spec, FPredictionKey PredictionKey)
+{
+    // 遍历 Executions
+    for (const FGameplayEffectExecutionDefinition& CurExecDef : SpecToUse.Def->Executions)
+    {
+        // Calc Class
+        const UGameplayEffectExecutionCalculation* ExecCDO = CurExecDef.CalculationClass->GetDefaultObject<UGameplayEffectExecutionCalculation>();
+
+        // 引用参数,指明要修改哪些属性
+        FGameplayEffectCustomExecutionOutput ExecutionOutput;
+
+        // 核心计算函数
+        ExecCDO->Execute(ExecutionParams, ExecutionOutput);
+
+        // 遍历要修改的属性,使用和Modifiers一样的方式设置新值
+        TArray<FGameplayModifierEvaluatedData>& OutModifiers = ExecutionOutput.GetOutputModifiersRef();
+
+        for (FGameplayModifierEvaluatedData& CurExecMod : OutModifiers)
+        {
+            ModifierSuccessfullyExecuted |= InternalExecuteMod(SpecToUse, CurExecMod);
+        }
+    }
+}
+```

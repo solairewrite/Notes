@@ -330,7 +330,7 @@ void FActiveGameplayEffectsContainer::ExecuteActiveEffectsFrom(FGameplayEffectSp
         // Calc Class
         const UGameplayEffectExecutionCalculation* ExecCDO = CurExecDef.CalculationClass->GetDefaultObject<UGameplayEffectExecutionCalculation>();
 
-        // 传入参数,CalculationModifiers等开了引擎看下到底有没有赋值
+        // 传入参数,CalculationModifiers,中文文档项目为null
         FGameplayEffectCustomExecutionParameters ExecutionParams(SpecToUse, CurExecDef.CalculationModifiers, Owner, CurExecDef.PassedInTags, PredictionKey);
 
         // 引用参数,指明要修改哪些属性
