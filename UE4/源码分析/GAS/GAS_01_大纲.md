@@ -23,8 +23,7 @@
 `AbilitySystem.Debug.NextCategory`
 
 ## TODO
-AbilityTask与`K2Node_LatentAbilityCall`相关  
-周期性GE的执行  
 基于属性的计算  
-PreAttributeChange断点  
 GE的移除  
+FScopedAggregatorOnDirtyBatch::DirtyAggregators什么时候加的  
+FAggregator::OnDirty是什么时候绑定的  

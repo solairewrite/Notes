@@ -14,12 +14,19 @@
         - [获取捕捉的属性值](#获取捕捉的属性值)
         - [获取根据Tag动态设置的值](#获取根据tag动态设置的值)
         - [参数OutExecutionOutput返回要修改的属性,后面调用`InternalExecuteMod`修改属性值](#参数outexecutionoutput返回要修改的属性后面调用internalexecutemod修改属性值)
+    - [持续性GE的Modifiers对属性CurrentValue的修改](#持续性ge的modifiers对属性currentvalue的修改)
+        - [`FAggregator::Evaluate`计算属性的CurrentValue](#faggregatorevaluate计算属性的currentvalue)
 
 ## 简介
-1. `UGameplayEffect::Modifiers`调用`InternalExecuteMod`修改属性  
+GE对属性的修改:  
+1. 瞬时GE: 根据Modifiers和Executions修改属性的BaseValue和CurrentValue  
+2. 周期性GE: 每次执行都可视为与瞬时GE相同,修改属性值  
+3. 持续GE: 根据Modifiers修改属性的CurrentValue  
 
-2. `UGameplayEffect::Executions`调用`UGameplayEffectExecutionCalculation::Execute`获取要修改的属性  
-    再调用`InternalExecuteMod`修改这些属性  
+`UGameplayEffect::Modifiers`调用`InternalExecuteMod`修改属性  
+
+`UGameplayEffect::Executions`调用`UGameplayEffectExecutionCalculation::Execute`获取要修改的属性  
+再调用`InternalExecuteMod`修改这些属性  
 
 一些生命周期(按执行顺序):  
 
@@ -181,7 +188,9 @@ UGDDamageExecCalculation::UGDDamageExecCalculation()
 `FGameplayEffectSpec::CapturedTargetTags`包含TargetASC的Tag  
 
 ### 获取捕捉的属性值
-`AttemptCalculateCapturedAttributeMagnitude`,函数蛮复杂的,有根据捕捉到的Tag对属性值做各种运算.我们应该用不到  
+`AttemptCalculateCapturedAttributeMagnitude`获取属性的CurrentValue  
+参考下面`FAggregator::Evaluate`  
+
 示例项目的用法很简单,就是直接获取`FGameplayEffectSpec::CapturedRelevantAttributes`里面的AttributeAggregator存储的值,即属性的BaseValue  
 
 ### 获取根据Tag动态设置的值
@@ -213,3 +222,26 @@ void FActiveGameplayEffectsContainer::ExecuteActiveEffectsFrom(FGameplayEffectSp
     }
 }
 ```
+
+## 持续性GE的Modifiers对属性CurrentValue的修改
+参考上一节,`FScopedAggregatorOnDirtyBatch`结构体的析构函数遍历`FScopedAggregatorOnDirtyBatch::DirtyAggregators`  
+对每一个`FAggregator`广播OnDirty(这个FAggregator是根据Modifiers创建的)  
+`FAggregator::OnDirty`绑定了`UAbilitySystemComponent::OnAttributeAggregatorDirty`,函数转发OnAttributeAggregatorDirty  
+
+```
+void FActiveGameplayEffectsContainer::OnAttributeAggregatorDirty(FAggregator* Aggregator, FGameplayAttribute Attribute, bool bFromRecursiveCall)
+{
+    // 计算属性的CUrrentValue
+    float NewValue = Aggregator->Evaluate(EvaluationParameters);
+
+    // 设置属性的CurrentValue,函数前面有讲解
+    InternalUpdateNumericalAttribute(Attribute, NewValue, nullptr, bFromRecursiveCall);
+}
+```
+
+### `FAggregator::Evaluate`计算属性的CurrentValue
+涉及到`FAggregator::ModChannels`的概念,即所有持续性GE对一个属性的修改  
+区分通道应该是为了指定执行顺序,每个通道里面又有加减乘除等修改方式  
+每种修改方式又有若干个修改,将它们全部叠加到一起,最后加上BaseValue就是返回的值  
+
+示例项目的用法很简单,就是直接获取`FGameplayEffectSpec::CapturedRelevantAttributes`里面的AttributeAggregator存储的值,即属性的BaseValue  

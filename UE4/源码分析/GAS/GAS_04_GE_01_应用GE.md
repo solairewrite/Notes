@@ -12,7 +12,10 @@
         - [检测GE是否被免疫](#检测ge是否被免疫)
         - [应用非瞬时GE: `ApplyGameplayEffectSpec`,主要添加Tag](#应用非瞬时ge-applygameplayeffectspec主要添加tag)
             - [定时移除GE](#定时移除ge)
-            - [`AddActiveGameplayEffectGrantedTagsAndModifiers`,为Target添加GE的Tag](#addactivegameplayeffectgrantedtagsandmodifiers为target添加ge的tag)
+            - [周期性GE的执行](#周期性ge的执行)
+            - [`CheckOngoingTagRequirements`激活持续性GE的核心函数,修改属性CurrentValue,为TargetASC添加Tag](#checkongoingtagrequirements激活持续性ge的核心函数修改属性currentvalue为targetasc添加tag)
+                - [`FScopedAggregatorOnDirtyBatch`结构体的析构函数,根据Modifiers修改属性CurrentValue](#fscopedaggregatorondirtybatch结构体的析构函数根据modifiers修改属性currentvalue)
+                - [`AddActiveGameplayEffectGrantedTagsAndModifiers`,存储Modifiers对属性的修改,为Target添加GE的Tag](#addactivegameplayeffectgrantedtagsandmodifiers存储modifiers对属性的修改为target添加ge的tag)
         - [应用瞬时GE: `ExecuteActiveEffectsFrom`,主要修改属性](#应用瞬时ge-executeactiveeffectsfrom主要修改属性)
             - [`InternalExecuteMod`,根据`UGameplayEffect::Modifiers`修改属性](#internalexecutemod根据ugameplayeffectmodifiers修改属性)
             - [`UGameplayEffectExecutionCalculation::Execute`根据`UGameplayEffect::Executions`修改属性](#ugameplayeffectexecutioncalculationexecute根据ugameplayeffectexecutions修改属性)
@@ -21,6 +24,12 @@
 `FActiveGameplayEffectsContainer UAbilitySystemComponent::ActiveGameplayEffects`储存所有GE  
 
 各版本应用GE函数的通用入口`UAbilitySystemComponent::ApplyGameplayEffectSpecToSelf`  
+
++ GE的作用:  
+1. 瞬时GE: 根据Modifiers和Executions修改属性的BaseValue和CurrentValue  
+2. 周期性GE: 每次执行都可视为与瞬时GE相同,修改属性值  
+3. 持续GE: 根据Modifiers修改属性的CurrentValue  
+   并给TargetASC添加GE的GrantedTags和DynamicGrantedTags  
 
 ![](Images/应用GE01.png)  
 
@@ -204,7 +213,12 @@ FActiveGameplayEffectHandle UAbilitySystemComponent::ApplyGameplayEffectSpecToSe
 被免疫时广播`OnImmunityBlockGameplayEffectDelegate`  
 
 ### 应用非瞬时GE: `ApplyGameplayEffectSpec`,主要添加Tag
-应用一个非瞬时GE,这里不考虑堆栈  
+函数主要功能:  
+1. 为TargetASC添加GE的Tag  
+2. 定时移除GE  
+3. 设置定时器执行周期性的GE  
+
+这里不考虑堆栈  
 
 ```
 FActiveGameplayEffect* FActiveGameplayEffectsContainer::ApplyGameplayEffectSpec(const FGameplayEffectSpec& Spec, FPredictionKey& InPredictionKey, bool& bFoundExistingStackableGE)
@@ -240,7 +254,13 @@ FActiveGameplayEffect* FActiveGameplayEffectsContainer::ApplyGameplayEffectSpec(
     FTimerDelegate Delegate = FTimerDelegate::CreateUObject(Owner, &UAbilitySystemComponent::CheckDurationExpired, AppliedActiveGE->Handle);
 	TimerManager.SetTimer(AppliedActiveGE->DurationHandle, Delegate, FinalDuration, false);
 
-    // 设置周期性执行的GE的定时器,这里不考虑
+    // 设置周期性执行的GE的定时器
+    if ((AppliedEffectSpec.GetPeriod() > UGameplayEffect::NO_PERIOD))
+    {
+        FTimerDelegate Delegate = FTimerDelegate::CreateUObject(Owner, &UAbilitySystemComponent::ExecutePeriodicEffect, AppliedActiveGE->Handle);
+
+        TimerManager.SetTimer(AppliedActiveGE->PeriodHandle, Delegate, AppliedEffectSpec.GetPeriod(), true);
+    }
 
     // 预测客户端绑定代理,在收到服务器拒绝,或服务器认证成功同步GE时,移除客户端预测的GE
     if(预测客户端)
@@ -248,8 +268,8 @@ FActiveGameplayEffect* FActiveGameplayEffectsContainer::ApplyGameplayEffectSpec(
         InPredictionKey.NewRejectOrCaughtUpDelegate(FPredictionKeyEvent::CreateUObject(Owner, &UAbilitySystemComponent::RemoveActiveGameplayEffect_NoReturn, AppliedActiveGE->Handle, -1));
     }
 
-    // 主要调用AddActiveGameplayEffectGrantedTagsAndModifiers
-    // 有关GE开关(GE可以被关闭,但它依然处于应用状态)和移除相关的Tag检测,这里不考虑
+    // 调用激活持续性GE的核心函数 CheckOngoingTagRequirements()
+    // 修改属性CurrentValue,为TargetASC添加Tag
     InternalOnActiveGameplayEffectAdded(*AppliedActiveGE);
 
     return AppliedActiveGE;
@@ -275,14 +295,64 @@ FActiveGameplayEffect* FActiveGameplayEffectsContainer::ApplyGameplayEffectSpec(
 }
 ```
 
-#### `AddActiveGameplayEffectGrantedTagsAndModifiers`,为Target添加GE的Tag
-对于非瞬时GE和客户端预测的瞬时GE,bInvokeGameplayCueEvents=false  
-这里先不考虑周期性的GE  
+#### 周期性GE的执行
+`ApplyGameplayEffectSpec()`中定时器绑定的函数为`ExecutePeriodicEffect`,其内部转发`InternalExecutePeriodicGameplayEffect`  
+
+```
+void FActiveGameplayEffectsContainer::InternalExecutePeriodicGameplayEffect(FActiveGameplayEffect& ActiveEffect)
+{
+    // 这其实是瞬时GE执行的函数,主要作用是根据UGameplayEffect::Modifiers和Executions修改属性
+    ExecuteActiveEffectsFrom(ActiveEffect.Spec);
+
+    // 广播代理
+    OnPeriodicGameplayEffectExecuteDelegateOnSelf.Broadcast();
+    OnPeriodicGameplayEffectExecuteDelegateOnTarget.Broadcast();
+}
+```
+
+#### `CheckOngoingTagRequirements`激活持续性GE的核心函数,修改属性CurrentValue,为TargetASC添加Tag
+```
+void FActiveGameplayEffect::CheckOngoingTagRequirements(const FGameplayTagContainer& OwnerTags, FActiveGameplayEffectsContainer& OwningContainer, bool bInvokeGameplayCueEvents)
+{
+     // 有关GE开关(GE可以被关闭,但它依然处于应用状态),不关心
+
+     {
+        // 结构体的析构函数修改了属性的CurrentValue
+        FScopedAggregatorOnDirtyBatch	AggregatorOnDirtyBatcher;
+
+        // 为TargetASC添加Tag
+        OwningContainer.AddActiveGameplayEffectGrantedTagsAndModifiers(*this, bInvokeGameplayCueEvents);
+     }
+}
+```
+
+##### `FScopedAggregatorOnDirtyBatch`结构体的析构函数,根据Modifiers修改属性CurrentValue
+放在下一节  
+
+##### `AddActiveGameplayEffectGrantedTagsAndModifiers`,存储Modifiers对属性的修改,为Target添加GE的Tag
+有持续时间的GE主要有如下功能:  
+1. 将UFGameplayEffect::Modifiers中对属性的修改存入AttributeAggregatorMap里面的ModChannels,用于计算属性的CurrentValue  
+2. 为Target添加GE的GrantedTags和FGameplayEffectSpec::DynamicGrantedTags  
 
 ```
 void FActiveGameplayEffectsContainer::AddActiveGameplayEffectGrantedTagsAndModifiers(FActiveGameplayEffect& Effect, bool bInvokeGameplayCueEvents)
 {
-    // 跟属性修改和周期执行GE相关的逻辑,先不考虑
+    // 将UFGameplayEffect::Modifiers中对属性的修改存入AttributeAggregatorMap里面的ModChannels
+    for (int32 ModIdx = 0; ModIdx < Effect.Spec.Modifiers.Num(); ++ModIdx)
+    {
+        const FGameplayModifierInfo &ModInfo = Effect.Spec.Def->Modifiers[ModIdx];
+
+        // 获取前面存储的计算后的属性修改值
+        float EvaluatedMagnitude = Effect.Spec.GetModifierMagnitude(ModIdx, true);
+
+        // 获取前面在AttributeAggregatorMap中存储的指定属性对应的FAggregator
+        FAggregator* Aggregator = FindOrCreateAttributeAggregator(Effect.Spec.Def->Modifiers[ModIdx].Attribute).Get();
+
+        // 将对属性的修改存入ModChannels
+        // 有持续时间的GE影响属性的CurrentValue,而CurrentValue是基于BaseValue的
+        // 叠加ModChannels中各通道对属性的修改,加上BaseValue就是CurrentValue
+        Aggregator->AddAggregatorMod(EvaluatedMagnitude, ModInfo.ModifierOp, ModInfo.EvaluationChannelSettings.GetEvaluationChannel(), &ModInfo.SourceTags, &ModInfo.TargetTags, Effect.PredictionKey.WasLocallyGenerated(), Effect.Handle);
+    }
 
     // 为Target添加GE的GrantedTags和FGameplayEffectSpec::DynamicGrantedTags
     Owner->UpdateTagMap(Effect.Spec.Def->InheritableOwnedTagsContainer.CombinedTags, 1);
