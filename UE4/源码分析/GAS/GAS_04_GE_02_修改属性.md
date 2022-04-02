@@ -34,7 +34,11 @@ GE对属性的修改:
 + `PreAttributeChange`: Clamp操作  
 + `PostGameplayEffectExecute`: 可以在这里写各种游戏逻辑,比如Clamp,为每一点伤害加分  
 
-![](Images/GE修改属性.png)
+![](Images/瞬时或周期性GE修改属性.png)
+<center>瞬时或周期性GE修改属性</center>
+
+![](Images/持续性GE修改属性.png)
+<center>持续GE修改属性</center>
 
 ## `InternalExecuteMod`,根据`UGameplayEffect::Modifiers`修改属性
 ```
@@ -86,13 +90,10 @@ void FActiveGameplayEffectsContainer::SetAttributeBaseValue(FGameplayAttribute A
 
     DataPtr->SetBaseValue(NewBaseValue);
 
-    // AttributeAggregatorMap是属性捕捉有关的变量,之前没注意什么时候会删除元素
     FAggregatorRef* RefPtr = AttributeAggregatorMap.Find(Attribute);
     if (RefPtr)
     {
-        // 注释中说dirty回调链会实际修改属性值,不理解什么意思
-        // 猜测:最后还是会修改CurrentValue,AttributeAggregatorMap的作用是保存捕捉的属性
-        //      避免在应用GE时属性值与捕捉时不同
+        // dirty回调链会实际修改CurrentValue
         RefPtr->Get()->SetBaseValue(NewBaseValue);
     }
     else
@@ -226,12 +227,16 @@ void FActiveGameplayEffectsContainer::ExecuteActiveEffectsFrom(FGameplayEffectSp
 ## 持续性GE的Modifiers对属性CurrentValue的修改
 参考上一节,`FScopedAggregatorOnDirtyBatch`结构体的析构函数遍历`FScopedAggregatorOnDirtyBatch::DirtyAggregators`  
 对每一个`FAggregator`广播OnDirty(这个FAggregator是根据Modifiers创建的)  
+
+`FActiveGameplayEffectsContainer::AddActiveGameplayEffectGrantedTagsAndModifiers`在创建FAggregator时,调用`FAggregator::AddAggregatorMod`,会将之储存到DirtyAggregators  
+
 `FAggregator::OnDirty`绑定了`UAbilitySystemComponent::OnAttributeAggregatorDirty`,函数转发OnAttributeAggregatorDirty  
+`FActiveGameplayEffectsContainer::FindOrCreateAttributeAggregator`创建FAggregator时绑定的OnDirty  
 
 ```
 void FActiveGameplayEffectsContainer::OnAttributeAggregatorDirty(FAggregator* Aggregator, FGameplayAttribute Attribute, bool bFromRecursiveCall)
 {
-    // 计算属性的CUrrentValue
+    // 计算属性的CurrentValue
     float NewValue = Aggregator->Evaluate(EvaluationParameters);
 
     // 设置属性的CurrentValue,函数前面有讲解

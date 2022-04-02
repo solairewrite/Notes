@@ -320,7 +320,7 @@ void FActiveGameplayEffect::CheckOngoingTagRequirements(const FGameplayTagContai
         // 结构体的析构函数修改了属性的CurrentValue
         FScopedAggregatorOnDirtyBatch	AggregatorOnDirtyBatcher;
 
-        // 为TargetASC添加Tag
+        // 存储Modifiers对属性的修改,为TargetASC添加Tag
         OwningContainer.AddActiveGameplayEffectGrantedTagsAndModifiers(*this, bInvokeGameplayCueEvents);
      }
 }
@@ -346,6 +346,7 @@ void FActiveGameplayEffectsContainer::AddActiveGameplayEffectGrantedTagsAndModif
         float EvaluatedMagnitude = Effect.Spec.GetModifierMagnitude(ModIdx, true);
 
         // 获取前面在AttributeAggregatorMap中存储的指定属性对应的FAggregator
+        // 绑定OnDirty
         FAggregator* Aggregator = FindOrCreateAttributeAggregator(Effect.Spec.Def->Modifiers[ModIdx].Attribute).Get();
 
         // 将对属性的修改存入ModChannels
