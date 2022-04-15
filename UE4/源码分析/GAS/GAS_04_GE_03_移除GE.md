@@ -9,6 +9,7 @@
         - [服务器移除GE: `InternalRemoveActiveGameplayEffect`](#服务器移除ge-internalremoveactivegameplayeffect)
         - [服务器和客户端移除GE,并清除副作用`RemoveActiveGameplayEffectGrantedTagsAndModifiers`](#服务器和客户端移除ge并清除副作用removeactivegameplayeffectgrantedtagsandmodifiers)
     - [手动移除GE: `BP_RemoveGameplayEffectFromOwnerWithHandle`](#手动移除ge-bp_removegameplayeffectfromownerwithhandle)
+    - [客户端,收到服务器同步移除GE](#客户端收到服务器同步移除ge)
 
 ## 简介
 有持续时间的GE会在创建时设置定时器移除  
@@ -98,3 +99,7 @@ void FActiveGameplayEffectsContainer::RemoveActiveGameplayEffectGrantedTagsAndMo
 `UGameplayAbility::BP_RemoveGameplayEffectFromOwnerWithHandle`  
 `UAbilitySystemComponent::RemoveActiveGameplayEffect`  
 内部转发`InternalRemoveActiveGameplayEffect`,和定时移除GE的流程相同  
+
+## 客户端,收到服务器同步移除GE
+`FActiveGameplayEffect::PreReplicatedRemove`  
+主要就是调用`RemoveActiveGameplayEffectGrantedTagsAndModifiers`  
