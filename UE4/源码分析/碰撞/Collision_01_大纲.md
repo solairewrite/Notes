@@ -5,7 +5,6 @@
 
 ## TODO
 UML截图  
-设置碰撞预设后发生了什么  
-射线检测函数中的碰撞筛选  
-BodyInstance的设置  
+BodyInstance的数据结构  
 SetCollisionProfileName  
+射线检测函数中的碰撞筛选  

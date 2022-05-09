@@ -1,3 +1,9 @@
+## 禁用代码优化
+```
+// .build.cs
+OptimizeCode = CodeOptimization.InShippingBuildsOnly;
+```
+
 ## 加速setup.bat下载速度
 编辑setup.bat  
 ```
