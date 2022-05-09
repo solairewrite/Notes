@@ -21,3 +21,14 @@ set PROMPT_ARGUMENT=--prompt --threads=20 --exclude=Linux --exclude=HTML5 --excl
 
 ## AI调试小键盘
 Project Settings -> (Engine)Gameplay Debugger -> Input  
+
+## 编译版本
+如果源码版引擎编译成功上传后,发布版无法打开项目  
+解决方式:  
+1. 使用发布版的Engine/Build/Build.Version文件,替换源码版的  
+   此时重新编译项目的话,应该会导致引擎重新编译  
+
+2. 项目Binaries/Win64文件夹下的.target, .modules等也要上传  
+   关注里面的BuildId字段
+
+3. 可能引擎要使用Development Editor,这点不确定  

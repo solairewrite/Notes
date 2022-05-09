@@ -11,6 +11,7 @@ ulua,slua的原理,UObject怎么传入lua
 UObject实现了哪些功能  
 寻路,光照  
 移动  
+读取ini  
 
 ## TODO
 协程  
