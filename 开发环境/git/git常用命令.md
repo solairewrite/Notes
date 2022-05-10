@@ -2,6 +2,9 @@
 >只拉取最近一次的提交  
 `git pull --depth=1 --allow-unrelated-histories`  
 
+>拉取指定分支  
+`git clone -b test url`  
+
 ### git lfs 大文件存储
 >查看 lfs 版本  
 `git lfs -v`  

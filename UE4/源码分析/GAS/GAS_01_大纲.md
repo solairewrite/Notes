@@ -4,6 +4,7 @@
     - [目录](#目录)
     - [章节列表](#章节列表)
     - [调试](#调试)
+    - [TODO](#todo)
 
 ## 章节列表
 [GAS中文文档](https://github.com/BillEliot/GASDocumentation_Chinese)  
@@ -21,3 +22,9 @@
 `showdebug abilitysystem`
 
 `AbilitySystem.Debug.NextCategory`
+
+## TODO
+AGameplayAbilityTargetActor  
+AGameplayAbilityTargetActor_Trace  
+Blueprint'/Game/GASShooter/Weapons/Rifle/GA_RiflePrimaryInstant.GA_RiflePrimaryInstant'  
+AGSGATA_Trace::ConfirmTargetingAndContinue  
