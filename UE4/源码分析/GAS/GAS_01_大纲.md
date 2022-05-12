@@ -26,5 +26,21 @@
 ## TODO
 AGameplayAbilityTargetActor  
 AGameplayAbilityTargetActor_Trace  
-Blueprint'/Game/GASShooter/Weapons/Rifle/GA_RiflePrimaryInstant.GA_RiflePrimaryInstant'  
-AGSGATA_Trace::ConfirmTargetingAndContinue  
+自定义GEContext  
+Batch  
+按键激活GA  
+TargetData结构,可以传Tag到服务器吗  
+即等待客户端事件  
+向服务器传Location,可以直接用TargetData那一套吗  
+GASShooter的GA看一遍  
+UAbilitySystemGlobals  
+
+
+ScriptStructCache  
+
+AGameplayAbilityTargetActor::ConfirmTargeting() 里面用到了通用事件  
+AGameplayAbilityTargetActor::BindToConfirmCancelInputs() 查看它是怎么绑定代理的  
+
+加一篇代理
+
+看AGameplayAbilityTargetActor_Trace  

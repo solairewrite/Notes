@@ -23,3 +23,7 @@ https://docs.unrealengine.com/4.27/zh-CN/ProductionPipelines/DevelopmentSetup/Vi
 Activate.*By
 TryActivateAbilitiesByTag
 ```
+
+## 死循环
+程序死循环时,可以通过VS暂停程序,看程序停在那里,来判断死循环位置  
+暂停按钮就在停止按钮的左边  

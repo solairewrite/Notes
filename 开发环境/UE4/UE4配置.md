@@ -4,6 +4,17 @@
 OptimizeCode = CodeOptimization.InShippingBuildsOnly;
 ```
 
+## 自动打开蓝图
+Editor Preferences -> Restore Open Asset Tabs On Restart  
+
+## 配置Idea
+Editor Preferences -> Source Code Editor  
+
+打开新窗口位置: Asset Editor Open Location  
+
+## 进程
+Editor Preferences -> Run Under One Process  
+
 ## 加速setup.bat下载速度
 编辑setup.bat  
 ```
