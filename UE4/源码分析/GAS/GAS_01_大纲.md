@@ -3,6 +3,7 @@
 - [GAS_01_大纲](#gas_01_大纲)
     - [目录](#目录)
     - [章节列表](#章节列表)
+    - [UML](#uml)
     - [调试](#调试)
     - [TODO](#todo)
 
@@ -18,29 +19,29 @@
 [GAS_06_Prediction](GAS_06_Prediction.md)  
 [GAS_07_GameplayTag](GAS_07_GameplayTag.md)  
 
+## UML
+UE4 GAS 01 类图  
+UE4 GAS 02 流程图  
+
 ## 调试
 `showdebug abilitysystem`
 
 `AbilitySystem.Debug.NextCategory`
 
 ## TODO
-AGameplayAbilityTargetActor  
-AGameplayAbilityTargetActor_Trace  
-自定义GEContext  
 Batch  
-按键激活GA  
+自定义GEContext  
+AGameplayAbilityTargetActor_Trace  
+
 TargetData结构,可以传Tag到服务器吗  
 即等待客户端事件  
 向服务器传Location,可以直接用TargetData那一套吗  
-GASShooter的GA看一遍  
-UAbilitySystemGlobals  
 
-
-ScriptStructCache  
+UAbilitySystemGlobals    
 
 AGameplayAbilityTargetActor::ConfirmTargeting() 里面用到了通用事件  
 AGameplayAbilityTargetActor::BindToConfirmCancelInputs() 查看它是怎么绑定代理的  
 
 加一篇代理
 
-看AGameplayAbilityTargetActor_Trace  
+回顾下Calc

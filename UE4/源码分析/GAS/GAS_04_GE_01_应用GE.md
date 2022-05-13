@@ -234,7 +234,7 @@ FActiveGameplayEffect* FActiveGameplayEffectsContainer::ApplyGameplayEffectSpec(
 
     FGameplayEffectSpec& AppliedEffectSpec = AppliedActiveGE->Spec;
 
-    // 捕捉Target Tag
+    // 捕捉Target Tag,Owner是ASC
     Owner->GetOwnedGameplayTags(AppliedEffectSpec.CapturedTargetTags.GetActorTags());
 
     // 捕捉Target的ASC的属性值

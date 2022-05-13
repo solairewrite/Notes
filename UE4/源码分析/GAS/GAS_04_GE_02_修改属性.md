@@ -31,7 +31,8 @@ GE对属性的修改:
 一些生命周期(按执行顺序):  
 
 + `PreGameplayEffectExecute`: Clamp操作,也可返回false取消对属性的修改  
-+ `PreAttributeChange`: Clamp操作  
++ `PreAttributeBaseChange`: Clamp操作,对BaseValue和CurrentValue均生效  
++ `PreAttributeChange`: Clamp操作,仅对CurrentValue生效  
 + `PostGameplayEffectExecute`: 可以在这里写各种游戏逻辑,比如Clamp,为每一点伤害加分  
 
 ![](Images/瞬时或周期性GE修改属性.png)

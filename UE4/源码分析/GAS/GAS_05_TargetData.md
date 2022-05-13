@@ -2,8 +2,13 @@
 ## 目录
 - [GAS_05_TargetData](#gas_05_targetdata)
     - [目录](#目录)
+    - [初始化](#初始化)
     - [先锁定目标再释放技能的整体流程](#先锁定目标再释放技能的整体流程)
     - [监听确认键被按下](#监听确认键被按下)
+
+## 初始化
+使用TargetData需要调用`UAbilitySystemGlobals::Get().InitGlobalData();`,否则会报错ScriptStructCache  
+参考GASShooter,UGSEngineSubsystem  
 
 ## 先锁定目标再释放技能的整体流程
 ![](Images/TargetData流程.png)  

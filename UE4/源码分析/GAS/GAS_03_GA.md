@@ -4,6 +4,7 @@
 	- [目录](#目录)
 	- [激活GA的流程](#激活ga的流程)
 		- [客户端激活GA](#客户端激活ga)
+			- [按下技能绑定按键](#按下技能绑定按键)
 		- [服务器激活GA](#服务器激活ga)
 		- [Standaolne模式激活GA](#standaolne模式激活ga)
 		- [总结](#总结)
@@ -30,7 +31,12 @@
 1. 调用`CallServerTryActivateAbility`,发送RPC,让服务器尝试激活技能  
 服务器收到RPC后,调用`CanActivateAbility`判断能否激活,然后激活技能  
 
-1. 客户端激活技能  
+2. 客户端激活技能  
+
+#### 按下技能绑定按键
+在客户端`UPlayerInput::ProcessInputStack`每帧调用,检测到技能按键按下后  
+调用`UAbilitySystemComponent::AbilityLocalInputPressed`,遍历ActivatableAbilities  
+如果有InputID匹配的技能,就调用`TryActivateAbility`,之后的流程和上面一样  
 
 ### 服务器激活GA
 1. 调用`ClientTryActivateAbility`,发送RPC,让客户端尝试激活技能  
