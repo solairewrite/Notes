@@ -6,7 +6,8 @@
 		- [LocalPlayer](#localplayer)
 		- [GameMode](#gamemode)
 	- [代码中指定的Class](#代码中指定的class)
-		- [Pawn](#pawn)
+		- [Pawn, GameState, PlayerState, PlayerController](#pawn-gamestate-playerstate-playercontroller)
+	- [TODO](#todo)
 
 ## DefaultEngine.ini中配置的Class
 ### LocalPlayer
@@ -26,11 +27,16 @@ GlobalDefaultGameMode=/Script/MyUnrealTournament.UTDMGameMode
 ```
 
 ## 代码中指定的Class
-### Pawn
+### Pawn, GameState, PlayerState, PlayerController
 ```
 AUTGameMode::AUTGameMode()
 {
    PlayerPawnObject = FSoftObjectPath(TEXT("/Game/RestrictedAssets/Blueprints/DefaultCharacter.DefaultCharacter_C"));
+
+   	GameStateClass = AUTGameState::StaticClass();
+	PlayerStateClass = AUTPlayerState::StaticClass();
+
+	PlayerControllerClass = AUTPlayerController::StaticClass();
 }
 
 void AUTBaseGameMode::InitGame()
@@ -38,3 +44,6 @@ void AUTBaseGameMode::InitGame()
 	DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *PlayerPawnObject.ToString(), NULL, LOAD_NoWarn));
 }
 ```
+
+## TODO
+GameInstance还未创建  

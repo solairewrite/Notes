@@ -29,19 +29,18 @@ UE4 GAS 02 流程图
 `AbilitySystem.Debug.NextCategory`
 
 ## TODO
-Batch  
-自定义GEContext  
-AGameplayAbilityTargetActor_Trace  
+Batch服务器的GA激活  
+AGameplayAbilityTargetActor_Trace, Reticle  
 
 TargetData结构,可以传Tag到服务器吗  
 即等待客户端事件  
-向服务器传Location,可以直接用TargetData那一套吗  
-
-UAbilitySystemGlobals    
+向服务器传Location,可以直接用TargetData那一套吗    
 
 AGameplayAbilityTargetActor::ConfirmTargeting() 里面用到了通用事件  
 AGameplayAbilityTargetActor::BindToConfirmCancelInputs() 查看它是怎么绑定代理的  
 
 加一篇代理
 
-回顾下Calc
+wait net sync, SendGameplayEvent  
+
+回顾Prediction  
