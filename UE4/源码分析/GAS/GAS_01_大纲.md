@@ -29,9 +29,6 @@ UE4 GAS 02 流程图
 `AbilitySystem.Debug.NextCategory`
 
 ## TODO
-Batch服务器的GA激活  
-AGameplayAbilityTargetActor_Trace, Reticle  
-
 TargetData结构,可以传Tag到服务器吗  
 即等待客户端事件  
 向服务器传Location,可以直接用TargetData那一套吗    

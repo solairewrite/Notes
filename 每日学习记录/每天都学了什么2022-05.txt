@@ -62,3 +62,8 @@
 
 2022-05-17  星期二
     1,GAS debug GC的流程,绘制UML
+
+2022-05-18  星期三
+    1,GAS 看AbilityTargetActor代码
+    2,GAS 看GC代码,绘制UML
+

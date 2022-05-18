@@ -8,3 +8,4 @@ UML截图
 BodyInstance的数据结构  
 SetCollisionProfileName  
 射线检测函数中的碰撞筛选  
+Trace ByProfile debug  

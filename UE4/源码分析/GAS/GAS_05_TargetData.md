@@ -5,6 +5,7 @@
     - [初始化](#初始化)
     - [先锁定目标再释放技能的整体流程](#先锁定目标再释放技能的整体流程)
     - [监听确认键被按下](#监听确认键被按下)
+    - [AbilityTargetActor](#abilitytargetactor)
 
 ## 初始化
 使用TargetData需要调用`UAbilitySystemGlobals::Get().InitGlobalData();`,否则会报错ScriptStructCache  
@@ -23,3 +24,7 @@ AbilityTargetActor通过`FHitResult PerformTrace()`来获取技能目标(即Targ
 ## 监听确认键被按下
 `Character`初始化时,将`DefaultInput.ini`中设置的确定按键绑定到`UAbilitySystemComponent::LocalInputConfirm()`  
 游戏运行时,`UPlayerInput::ProcessInputStack`每帧调用,如果按下确定键,就会调用`LocalInputConfirm`  
+
+## AbilityTargetActor
+就是做物理检测的,具体逻辑看GASShooter里面继承的子类  
+写的比较散  

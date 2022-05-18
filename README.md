@@ -4,6 +4,7 @@
 [GAS](UE4/源码分析/GAS/GAS_01_大纲.md)  
 
 ## 要添加的模块
+图片\UE4\UE4引擎框架类图.jpg
 ulua,slua的原理,UObject怎么传入lua  
 渲染管线shader  
 帧同步  
@@ -11,7 +12,7 @@ ulua,slua的原理,UObject怎么传入lua
 UObject实现了哪些功能  
 寻路,光照  
 移动  
-读取ini  
+读取ini,Config和构造函数的先后顺序  
 
 ## TODO
 UE4文件夹整理  
