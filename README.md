@@ -11,7 +11,7 @@ ulua,slua的原理,UObject怎么传入lua
 性能优化  
 UObject实现了哪些功能  
 寻路,光照  
-移动  
+移动,ProjectileMovementComponent  
 读取ini,Config和构造函数的先后顺序  
 
 ## TODO

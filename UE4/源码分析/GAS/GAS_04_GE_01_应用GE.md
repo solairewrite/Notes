@@ -206,9 +206,13 @@ FActiveGameplayEffectHandle UAbilitySystemComponent::ApplyGameplayEffectSpecToSe
 ```
 
 ### 检测GE是否被免疫
-`UGameplayEffect::GrantedApplicationImmunityTags`里面的RequireTags定义了提供免疫的Tag  
-遍历所有激活的GE `ActiveGameplayEffects`,如果新应用的GE的`CapturedSourceTags`包含免疫的Tag,则GE被免疫  
-即GE自身的Tag和ASC的Tag,只要包含任意已激活GE的免疫Tag,就会被免疫掉  
+`FGameplayTagRequirements UGameplayEffect::GrantedApplicationImmunityTags`提供免疫的Tag  
+里面有2个属性:  
+1. `FGameplayTagContainer RequireTags`: 拥有所有RequireTags才满足免疫条件  
+2. `FGameplayTagContainer IgnoreTags`: 没有任何IgnoreTags才满足免疫条件  
+
+在应用一个新GE时,遍历所有激活的GE `ActiveGameplayEffects`  
+如果新GE的`CapturedSourceTags`(即GE自身的Tag和ASC的Tag),满足任何已激活GE提供的免疫Tag,则新GE被免疫  
 
 被免疫时广播`OnImmunityBlockGameplayEffectDelegate`  
 
