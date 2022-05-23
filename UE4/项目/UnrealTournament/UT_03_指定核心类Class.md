@@ -31,7 +31,7 @@ GlobalDefaultGameMode=/Script/MyUnrealTournament.UTDMGameMode
 ```
 AUTGameMode::AUTGameMode()
 {
-   PlayerPawnObject = FSoftObjectPath(TEXT("/Game/RestrictedAssets/Blueprints/DefaultCharacter.DefaultCharacter_C"));
+	PlayerPawnObject = FSoftObjectPath(TEXT("/Game/RestrictedAssets/Blueprints/DefaultCharacter.DefaultCharacter_C"));
 
    	GameStateClass = AUTGameState::StaticClass();
 	PlayerStateClass = AUTPlayerState::StaticClass();
