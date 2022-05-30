@@ -49,3 +49,7 @@ Project Settings -> (Engine)Gameplay Debugger -> Input
    关注里面的BuildId字段
 
 3. 可能引擎要使用Development Editor,这点不确定  
+
+## UE5主题
+UnrealEngine\Engine\Content\Slate\Themes 文件夹下添加XXX.json主题文件  
+在Editor Preferences -> Theme 中选择主题  
