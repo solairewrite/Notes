@@ -10,3 +10,7 @@
 
 2022-06-04  星期六  端午节2/3
     1,Lyra,创建基础Class,设置Pawn Class
+
+2022-06-05  星期日  端午节3/3
+    1,Lyra,设置Pawn Class,处理Experience,创建GF插件ShooterCore
+    
