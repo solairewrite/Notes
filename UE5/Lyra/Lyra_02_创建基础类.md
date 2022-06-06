@@ -14,11 +14,14 @@
          - [CommonUser](#commonuser)
       - [创建插件](#创建插件)
          - [ShooterCore](#shootercore)
+         - [ShooterMaps](#shootermaps)
    - [Gameplay Class的设置](#gameplay-class的设置)
    - [Pawn Class的设置](#pawn-class的设置)
    - [Pawn的创建位置](#pawn的创建位置)
    - [要创建的文件](#要创建的文件)
-   - [问题](#问题)
+   - [遇到的问题](#遇到的问题)
+      - [B_ShooterGame_Elimination无法引用HeroData_ShooterGame](#b_shootergame_elimination无法引用herodata_shootergame)
+      - [WorldSettings无法引用B_ShooterGame_Elimination](#worldsettings无法引用b_shootergame_elimination)
 
 ## 模块重命名LyraGame
 对项目中各种.Target.cs文件和.build.cs文件的文件名和文件内部的命名进行修改  
@@ -63,6 +66,10 @@ CommonGame引用此插件
 在.uproject文件中Plugins数组添加ShooterCore,否则引擎再次打开时不会显示此插件  
 需要在.build.cs文件中添加模块依赖?  
 
+#### ShooterMaps
+提供地图,需要在ShooterMaps的GameFeatureData文件中,点击Edit Plugin按钮  
+在Dependencies -> Plugins下面添加ShooterCore,才能引用ShooterCore中的文件  
+
 ## Gameplay Class的设置
 DefaultEngine.ini中设置GlobalDefaultGameMode, WorldSettingsClassName, AssetManagerClassName  
 GameState等直接在GameMode构造函数中设置  
@@ -78,13 +85,27 @@ ALyraGameMode::HandleStartingNewPlayer_Implementation()中判断体验加载完�
 ALyraGameMode::OnExperienceLoaded()中创建了Pawn  
 
 ## 要创建的文件
-我这里犯了一个错误,HeroData_ShooterGame是一个DataAsset,但是我把他创建为蓝图类,导致无法识别  
+我这里犯了一个错误
 
-[AssetLog] E:\Learn\LearnLyra\Content\System\DefaultEditorMap\L_DefaultEditorOverview.umap: Illegally references asset /ShooterCore/Experiences/B_ShooterGame_Elimination. You may only reference assets from EngineContent, and ProjectContent here. (AssetValidator_AssetReferenceRestrictions)  
+
 
 Project Settings -> Asset Manager
 
 ShooterCore的GameFeatureData文件配置AssetManager Primary AssetTypes to Scan  
 
-## 问题
-WorldSettings无法引用B_ShooterGame_Elimination
+## 遇到的问题
+### B_ShooterGame_Elimination无法引用HeroData_ShooterGame
+HeroData_ShooterGame是一个DataAsset,但是我把他创建为蓝图类,导致无法识别  
+
+### WorldSettings无法引用B_ShooterGame_Elimination
+```
+[AssetLog] E:\Learn\LearnLyra\Content\System\DefaultEditorMap\L_DefaultEditorOverview.umap: 
+Illegally references asset /ShooterCore/Experiences/B_ShooterGame_Elimination. 
+You may only reference assets from EngineContent, and ProjectContent here. 
+(AssetValidator_AssetReferenceRestrictions)
+```
+
+应该是游戏本体Content无法引用Plugins中的内用,但是Plugins配置依赖后可以引用其他Plugins的内容  
+
+需要创建ShooterMaps插件,然后在它的GameFeatureData文件中,点击Edit Plugin按钮  
+在Dependencies -> Plugins下面添加ShooterCore,才能引用ShooterCore中的文件  
