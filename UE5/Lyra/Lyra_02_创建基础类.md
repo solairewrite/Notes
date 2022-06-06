@@ -85,13 +85,8 @@ ALyraGameMode::HandleStartingNewPlayer_Implementation()中判断体验加载完�
 ALyraGameMode::OnExperienceLoaded()中创建了Pawn  
 
 ## 要创建的文件
-我这里犯了一个错误
-
-
-
-Project Settings -> Asset Manager
-
-ShooterCore的GameFeatureData文件配置AssetManager Primary AssetTypes to Scan  
+体验BlueprintClass: B_ShooterGame_Elimination  
+角色DataAsset: HeroData_ShooterGame  
 
 ## 遇到的问题
 ### B_ShooterGame_Elimination无法引用HeroData_ShooterGame

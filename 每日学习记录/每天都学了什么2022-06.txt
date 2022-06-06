@@ -14,3 +14,6 @@
 2022-06-05  星期日  端午节3/3
     1,Lyra,设置Pawn Class,处理Experience,创建GF插件ShooterCore
     
+2022-06-06  星期一
+    1,Lyra,解决了主Content无法引用Plugin资源的问题,只有Plugin才能引用Plugin
+    2,Lyra,根据之前记录的断点,绘制初步UML,确定接下来如何编写按键绑定的代码
