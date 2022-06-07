@@ -1,3 +1,18 @@
+# UE配置
+## 目录
+- [UE配置](#ue配置)
+    - [目录](#目录)
+    - [禁用代码优化](#禁用代码优化)
+    - [自动打开蓝图](#自动打开蓝图)
+    - [配置Idea](#配置idea)
+    - [进程](#进程)
+    - [加速setup.bat下载速度](#加速setupbat下载速度)
+    - [每次编译都会执行 using git status 占用大量时间](#每次编译都会执行-using-git-status-占用大量时间)
+    - [AI调试小键盘](#ai调试小键盘)
+    - [编译版本](#编译版本)
+    - [UE5主题](#ue5主题)
+    - [UE5自动打开上一个项目](#ue5自动打开上一个项目)
+
 ## 禁用代码优化
 ```
 // .build.cs
@@ -53,3 +68,6 @@ Project Settings -> (Engine)Gameplay Debugger -> Input
 ## UE5主题
 UnrealEngine\Engine\Content\Slate\Themes 文件夹下添加XXX.json主题文件  
 在Editor Preferences -> Theme 中选择主题  
+
+## UE5自动打开上一个项目
+File -> Open Project -> Always load last project on startup  
