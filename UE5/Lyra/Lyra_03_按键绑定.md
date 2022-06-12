@@ -2,10 +2,13 @@
 ## 目录
 - [Lyra_03_按键绑定](#lyra_03_按键绑定)
     - [目录](#目录)
-    - [按键绑定](#按键绑定)
-    - [勾选插件](#勾选插件)
-    - [要创建的组件](#要创建的组件)
-    - [要创建的蓝图](#要创建的蓝图)
+    - [概述](#概述)
+        - [核心函数](#核心函数)
+        - [整体流程](#整体流程)
+    - [创建Class](#创建class)
+        - [勾选插件](#勾选插件)
+        - [要创建的组件](#要创建的组件)
+        - [要创建的蓝图](#要创建的蓝图)
     - [配置位置](#配置位置)
         - [配置InputAction到FKey(按键)的映射](#配置inputaction到fkey按键的映射)
             - [ShooterCore](#shootercore)
@@ -19,38 +22,55 @@
         - [配置GameplayTag到按键回调函数的映射](#配置gameplaytag到按键回调函数的映射)
             - [对于移动](#对于移动)
             - [对于GameplayAbility](#对于gameplayability)
-    - [核心函数](#核心函数)
-    - [TODO](#todo)
-    - [RebuildControlMappings 应该是核心函数,要看的](#rebuildcontrolmappings-应该是核心函数要看的)
-    - [ULyraHeroComponent::InitializePlayerInput](#ulyraherocomponentinitializeplayerinput)
-        - [ULyraInputComponent::AddInputMappings 绑定InputAction到FKey(按键)的映射](#ulyrainputcomponentaddinputmappings-绑定inputaction到fkey按键的映射)
-        - [ULyraInputComponent::BindNativeAction](#ulyrainputcomponentbindnativeaction)
-    - [UGameFeatureAction_AddInputConfig 绑定InputAction到FKey按键](#ugamefeatureaction_addinputconfig-绑定inputaction到fkey按键)
+    - [UGameFeatureAction_AddInputConfig 储存配置的FKey按键到InputAction的映射](#ugamefeatureaction_addinputconfig-储存配置的fkey按键到inputaction的映射)
+    - [ULyraHeroComponent::InitializePlayerInput 按键绑定入口](#ulyraherocomponentinitializeplayerinput-按键绑定入口)
+        - [ULyraInputComponent::AddInputMappings 绑定FKey到InputAction的映射](#ulyrainputcomponentaddinputmappings-绑定fkey到inputaction的映射)
+        - [ULyraInputComponent::BindNativeAction 将UInputAction绑定到代理函数](#ulyrainputcomponentbindnativeaction-将uinputaction绑定到代理函数)
 
-## 按键绑定
+## 概述
+### 核心函数
+IEnhancedInputSubsystemInterface::AddPlayerMappableConfig, 内置函数,将UInputAction绑定到FKey  
+UEnhancedInputComponent::BindAction, 内置函数,将UInputAction绑定到代理函数  
 
-## 勾选插件
+### 整体流程
+1. UGameFeatureAction_AddInputConfig::OnGameFeatureActivating  
+
+将IMC_Default_KBM中配置的按键到InputAction的映射,储存到ULyraSettingsLocal::RegisteredInputConfigs  
+
+2. ULyraHeroComponent::InitializePlayerInput  
+
+调用AddInputMappings, BindNativeAction  
+
+3. ULyraInputComponent::AddInputMappings  
+
+获取ULyraSettingsLocal::RegisteredInputConfigs中存储的按键到InputAction的映射  
+调用核心函数AddPlayerMappableConfig,将FKey映射到InputAction  
+
+4. ULyraInputComponent::BindNativeAction  
+
+根据GameplayTags,获取InputData_Hero中配置的对应的InputAction,然后直接写死这个Tag对应的回调函数  
+调用核心函数BindAction,将UInputAction绑定到代理函数  
+
+## 创建Class
+### 勾选插件
 Enhanced Input  
 
-## 要创建的组件
+### 要创建的组件
 ULyraInputComponent: 内置生成,看类设置  
 ULyraPawnExtensionComponent: ALyraCharacter构造函数中生成  
 ULyraHeroComponent: B_Hero_ShooterMannequin继承的B_Hero_Default蓝图挂载的组件  
 
-## 要创建的蓝图
+### 要创建的蓝图
 B_Hero_ShooterMannequin, B_Hero_Default: 角色类  
 InputData_Hero: 配置InputAction -> InputTag的映射  
-PMI_Default_KBM, IMC_Default_KBM: 配置按键 -> 字符串的映射?  
+PMI_Default_KBM, IMC_Default_KBM: 配置按键 -> InputAction的映射  
 
 ## 配置位置
-ULyraHeroComponent::DefaultInputConfigs: 储存UInputAction到FKey的映射  
-InputData_Hero: 储存FGameplayTag到UInputAction的映射  
-
 ### 配置InputAction到FKey(按键)的映射
 #### ShooterCore
 Plugins/GameFeatures/ShooterCore 的 GameFeatureData  
 Actions数组中添加GameFeayureAction_AddInputConfig  
-里面的InputConfigs数组中包含的其中一个:  
+里面的InputConfigs数组中包含:  
 Config: PMI_Default_KBM  
 
 #### PMI_Default_KBM
@@ -58,18 +78,16 @@ Config: PMI_Default_KBM
 Contexts: IMC_Default_KBM  
 
 #### IMC_Default_KBM 配置InputAction到FKey(按键)的映射
-引擎内置,继承自UInputMappingContext : UDataAsset  
+继承自引擎内置类 UInputMappingContext : UDataAsset  
 其中一个配置是:  
 IA_Move到按键WASD的映射  
 
-<font color=red>问题: WASD是怎么确认前后左右的?</font>  
-<font color=red>问题: PlayerMappableOptions里面的MoveForward有用到吗?</font>  
-
-难道按键D,啥也没配置,就代表向X轴正向有输入  
+按键D,Modifiers无配置,代表向X轴正向有输入  
 按键A,Modifiers配置Negate,表示向X轴负向输入  
 按键W,Modifiers配置Swizzle Input Axis Values,表示重新排列轴的顺序,Order配置YXZ,表示向Y轴正向输入  
+
 UInputModifierNegate: 引擎内置,反转每个轴的输入  
-UInputModifierSwizzleAxis: 重排轴向,常用于将X轴转化为Y轴  
+UInputModifierSwizzleAxis: 引擎内置,重排轴向,常用于将X轴转化为Y轴  
 
 ### 配置InputAction到GameplayTag的映射
 #### L_Expanse地图的WorldSettings
@@ -84,7 +102,7 @@ PawnClass: B_Hero_ShooterMannequin
 InputConfig: InputData_Hero  
 
 #### InputData_Hero 配置InputAction到GameplayTag的映射
-UInputAction继承自UDataAsset,它是在蓝图中创建的一个DataAsset实例,配置输入事件的属性  
+UInputAction继承自UDataAsset,由开发者自己在蓝图中创建若干实例,表示一个个的输入事件  
 其中一个是:  
 InputAction: IA_Move  
 InputTag: InputTag.Move  
@@ -97,33 +115,27 @@ ULyraHeroComponent::InitializePlayerInput()在函数代码中直接写死
 #### 对于GameplayAbility
 TODO  
 
-## 核心函数
-IEnhancedInputSubsystemInterface::AddPlayerMappableConfig, 内置函数,将UInputAction绑定到FKey  
-UEnhancedInputComponent::BindAction, 内置函数,将UInputAction绑定到代理函数
+## UGameFeatureAction_AddInputConfig 储存配置的FKey按键到InputAction的映射
+```
+void UGameFeatureAction_AddInputConfig::OnGameFeatureActivating(FGameFeatureActivatingContext& Context)
+{
+    // Pair.Config: PMI_Default_KBM
+    // Pair.Config.Contexts: IMC_Default_KBM, 配置按键到InputAction的映射
+    for (const FMappableConfigPair& Pair : InputConfigs)
+    {
+        // 将映射储存到ULyraSettingsLocal::RegisteredInputConfigs
+        FMappableConfigPair::ActivatePair(Pair);
+    }
+}
+```
 
-## TODO
-InputAction具体是什么  
-UEnhancedInputLocalPlayerSubsystem* Subsystem 具体是什么,是接口?还是继承了?怎么创建的  
-FLyraGameplayTags  怎么创建的  
-ULyraSettingsLocal 创建  
-ULyraHeroComponent::DefaultInputConfigs 设置了什么,啥也没配置?  
+## ULyraHeroComponent::InitializePlayerInput 按键绑定入口
+应用FKey到InputAction,InputAction到回调函数的映射  
 
-UEngine::InitializeObjectReferences和StartPlayInEditorGameInstance的先后顺序  
-
-## RebuildControlMappings 应该是核心函数,要看的
-参考UT_04_按键绑定
-
-## ULyraHeroComponent::InitializePlayerInput
 ```
 void ULyraHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
     UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-
-    // 将ULyraHeroComponent::DefaultInputConfigs中配置的按键存入ULyraSettingsLocal::RegisteredInputConfigs
-    for (const FMappableConfigPair& Pair : DefaultInputConfigs)
-    {
-        FMappableConfigPair::ActivatePair(Pair);
-    }
 
     ULyraInputComponent* LyraIC = CastChecked<ULyraInputComponent>(PlayerInputComponent);
 
@@ -131,10 +143,12 @@ void ULyraHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompo
     // InputConfig: InputData_Hero
     ULyraInputConfig* InputConfig = PawnData->InputConfig;
 
-    // ???
+    // 应ULyraSettingsLocal::RegisteredInputConfigs中储存的FKey到InputAction的映射
     LyraIC->AddInputMappings(InputConfig, Subsystem);
 
-    // ???
+    // 根据GameplayTag,找到InputData_Hero中配置的InputAction
+    // 然后将InputAction绑定到回调函数
+    // 这里其实是将GameplayTag到回调函数的映射写死
     LyraIC->BindNativeAction(
         InputConfig, 
         GameplayTags.InputTag_Move, 
@@ -146,7 +160,9 @@ void ULyraHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompo
 }
 ```
 
-### ULyraInputComponent::AddInputMappings 绑定InputAction到FKey(按键)的映射
+### ULyraInputComponent::AddInputMappings 绑定FKey到InputAction的映射
+调用核心函数IEnhancedInputSubsystemInterface::AddPlayerMappableConfig,将FKey映射到InputAction  
+
 ```
 void ULyraInputComponent::AddInputMappings(const ULyraInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
 {
@@ -155,14 +171,13 @@ void ULyraInputComponent::AddInputMappings(const ULyraInputConfig* InputConfig, 
 
     for (const FLoadedMappableConfigPair& Pair : Configs)
     {
-        // 内置函数,应用映射
-        // ULyraHeroComponent::DefaultInputConfigs中配置的按键和事件的映射???
+        // 内置函数,应用InputAction到FKey(按键)的映射
         InputSubsystem->AddPlayerMappableConfig(Pair.Config, Options);
     }
 }
 ```
 
-### ULyraInputComponent::BindNativeAction
+### ULyraInputComponent::BindNativeAction 将UInputAction绑定到代理函数
 ```
 template<class UserClass, typename FuncType>
 void ULyraInputComponent::BindNativeAction(
@@ -179,17 +194,6 @@ void ULyraInputComponent::BindNativeAction(
     {
         // 内置函数,将UInputAction绑定到代理函数
         BindAction(IA, TriggerEvent, Object, Func);
-    }
-}
-```
-
-## UGameFeatureAction_AddInputConfig 绑定InputAction到FKey按键
-```
-void UGameFeatureAction_AddInputConfig::OnGameFeatureActivating(FGameFeatureActivatingContext& Context)
-{
-    for (const FMappableConfigPair& Pair : InputConfigs)
-    {
-        FMappableConfigPair::ActivatePair(Pair);
     }
 }
 ```

@@ -21,10 +21,12 @@ GlobalDefaultGameMode=/Game/B_LyraGameMode.B_LyraGameMode_C
 
 ## TODO
 LyraGameFeaturePolicy  
-注意下AssetManager的配置
 
 创建 B_LyraGameMode : LyraGameMode  
 创建 B_Hero_ShooterMannequin (ShooterCore插件) : B_Hero_Default : Character_Default : LyraCharacter  
+  
+按下W时ULyraHeroComponent::Input_Move的堆栈  
+RebuildControlMappings核心函数  
 
 ## 开枪
 GA_Weapon_Fire_Rifle_Auto  
