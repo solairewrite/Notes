@@ -29,7 +29,7 @@
 
 ## 概述
 ### 核心函数
-IEnhancedInputSubsystemInterface::AddPlayerMappableConfig, 内置函数,将UInputAction绑定到FKey  
+IEnhancedInputSubsystemInterface::AddPlayerMappableConfig, 内置函数,将FKey绑定到UInputAction  
 UEnhancedInputComponent::BindAction, 内置函数,将UInputAction绑定到代理函数  
 
 ### 整体流程
@@ -143,7 +143,7 @@ void ULyraHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompo
     // InputConfig: InputData_Hero
     ULyraInputConfig* InputConfig = PawnData->InputConfig;
 
-    // 应ULyraSettingsLocal::RegisteredInputConfigs中储存的FKey到InputAction的映射
+    // 应用ULyraSettingsLocal::RegisteredInputConfigs中储存的FKey到InputAction的映射
     LyraIC->AddInputMappings(InputConfig, Subsystem);
 
     // 根据GameplayTag,找到InputData_Hero中配置的InputAction
