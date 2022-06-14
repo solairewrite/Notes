@@ -10,6 +10,7 @@
 ## 章节列表
 [Lyra_02_创建基础类](Lyra_02_创建基础类.md)  
 [Lyra_03_按键绑定](Lyra_03_按键绑定.md)  
+[Lyra_04_跳跃GA](Lyra_04_跳跃GA.md)  
 
 ## 配置
 默认地图: L_DefaultEditorOverview  
