@@ -13,7 +13,7 @@
         - [配置InputAction到FKey(按键)的映射](#配置inputaction到fkey按键的映射)
             - [ShooterCore](#shootercore)
             - [PMI_Default_KBM](#pmi_default_kbm)
-            - [IMC_Default_KBM 配置InputAction到FKey(按键)的映射](#imc_default_kbm-配置inputaction到fkey按键的映射)
+            - [IMC_Default_KBM 配置FKey(按键)到InputAction的映射](#imc_default_kbm-配置fkey按键到inputaction的映射)
         - [配置InputAction到GameplayTag的映射](#配置inputaction到gameplaytag的映射)
             - [L_Expanse地图的WorldSettings](#l_expanse地图的worldsettings)
             - [B_ShooterGame_Elimination 游戏体验](#b_shootergame_elimination-游戏体验)
@@ -77,7 +77,7 @@ Config: PMI_Default_KBM
 引擎内置,继承自UPlayerMappableInputConfig : UPrimaryDataAsset  
 Contexts: IMC_Default_KBM  
 
-#### IMC_Default_KBM 配置InputAction到FKey(按键)的映射
+#### IMC_Default_KBM 配置FKey(按键)到InputAction的映射
 继承自引擎内置类 UInputMappingContext : UDataAsset  
 其中一个配置是:  
 IA_Move到按键WASD的映射  
