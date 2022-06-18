@@ -10,6 +10,7 @@
         - [要创建的组件](#要创建的组件)
         - [要创建的蓝图](#要创建的蓝图)
     - [配置位置](#配置位置)
+        - [Defaultinput.ini](#defaultinputini)
         - [配置InputAction到FKey(按键)的映射](#配置inputaction到fkey按键的映射)
             - [ShooterCore](#shootercore)
             - [PMI_Default_KBM](#pmi_default_kbm)
@@ -66,6 +67,12 @@ InputData_Hero: 配置InputAction -> InputTag的映射
 PMI_Default_KBM, IMC_Default_KBM: 配置按键 -> InputAction的映射  
 
 ## 配置位置
+### Defaultinput.ini
+```
+DefaultInputComponentClass=/Script/LyraGame.LyraInputComponent
+DefaultPlayerInputClass=/Script/EnhancedInput.EnhancedPlayerInput
+```
+
 ### 配置InputAction到FKey(按键)的映射
 #### ShooterCore
 Plugins/GameFeatures/ShooterCore 的 GameFeatureData  
@@ -171,7 +178,7 @@ void ULyraInputComponent::AddInputMappings(const ULyraInputConfig* InputConfig, 
 
     for (const FLoadedMappableConfigPair& Pair : Configs)
     {
-        // 内置函数,应用InputAction到FKey(按键)的映射
+        // 内置函数,应用FKey(按键)到InputAction的映射
         InputSubsystem->AddPlayerMappableConfig(Pair.Config, Options);
     }
 }
