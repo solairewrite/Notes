@@ -1,11 +1,11 @@
 # Lyra_01_大纲
 ## 目录
 - [Lyra_01_大纲](#lyra_01_大纲)
-    - [目录](#目录)
-    - [章节列表](#章节列表)
-    - [配置](#配置)
-    - [TODO](#todo)
-    - [开枪](#开枪)
+  - [目录](#目录)
+  - [章节列表](#章节列表)
+  - [配置](#配置)
+  - [TODO](#todo)
+  - [开枪](#开枪)
 
 ## 章节列表
 [Lyra_02_创建基础类](Lyra_02_创建基础类.md)  
@@ -28,6 +28,8 @@ LyraGameFeaturePolicy
   
 按下W时ULyraHeroComponent::Input_Move的堆栈  
 RebuildControlMappings核心函数  
+
+IMC_Default_KBM 里面有几个 IA_Look_Mouse 的修改  
 
 ## 开枪
 GA_Weapon_Fire_Rifle_Auto  
