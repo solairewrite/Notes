@@ -1,3 +1,5 @@
 .vscode
 
+# drawio缓存
 *.drawio.bkp
+*.drawio.dtmp
