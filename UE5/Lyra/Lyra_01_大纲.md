@@ -4,8 +4,8 @@
   - [目录](#目录)
   - [章节列表](#章节列表)
   - [配置](#配置)
-  - [TODO](#todo)
   - [开枪](#开枪)
+  - [TODO](#todo)
 
 ## 章节列表
 [Lyra_02_创建基础类](Lyra_02_创建基础类.md)  
@@ -20,6 +20,12 @@
 WorldSettingsClassName=/Script/LyraGame.LyraWorldSettings
 GlobalDefaultGameMode=/Game/B_LyraGameMode.B_LyraGameMode_C
 
+## 开枪
+GA_Weapon_Fire_Rifle_Auto  
+GE_Damage_RifleAuto  
+GA_Weapon_Fire_Pistol  
+InputTag.Weapon.Fire  
+
 ## TODO
 LyraGameFeaturePolicy  
 
@@ -30,9 +36,3 @@ LyraGameFeaturePolicy
 RebuildControlMappings核心函数  
 
 IMC_Default_KBM 里面有几个 IA_Look_Mouse 的修改  
-
-## 开枪
-GA_Weapon_Fire_Rifle_Auto  
-GE_Damage_RifleAuto  
-GA_Weapon_Fire_Pistol  
-InputTag.Weapon.Fire  
