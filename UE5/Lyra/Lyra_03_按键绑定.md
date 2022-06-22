@@ -1,32 +1,33 @@
 # Lyra_03_按键绑定
 ## 目录
 - [Lyra_03_按键绑定](#lyra_03_按键绑定)
-    - [目录](#目录)
-    - [概述](#概述)
-        - [核心函数](#核心函数)
-        - [整体流程](#整体流程)
-    - [创建Class](#创建class)
-        - [勾选插件](#勾选插件)
-        - [要创建的组件](#要创建的组件)
-        - [要创建的蓝图](#要创建的蓝图)
-    - [配置位置](#配置位置)
-        - [Defaultinput.ini](#defaultinputini)
-        - [配置InputAction到FKey(按键)的映射](#配置inputaction到fkey按键的映射)
-            - [ShooterCore](#shootercore)
-            - [PMI_Default_KBM](#pmi_default_kbm)
-            - [IMC_Default_KBM 配置FKey(按键)到InputAction的映射](#imc_default_kbm-配置fkey按键到inputaction的映射)
-        - [配置InputAction到GameplayTag的映射](#配置inputaction到gameplaytag的映射)
-            - [L_Expanse地图的WorldSettings](#l_expanse地图的worldsettings)
-            - [B_ShooterGame_Elimination 游戏体验](#b_shootergame_elimination-游戏体验)
-            - [HeroData_ShooterGame 角色配置](#herodata_shootergame-角色配置)
-            - [InputData_Hero 配置InputAction到GameplayTag的映射](#inputdata_hero-配置inputaction到gameplaytag的映射)
-        - [配置GameplayTag到按键回调函数的映射](#配置gameplaytag到按键回调函数的映射)
-            - [对于移动](#对于移动)
-            - [对于GameplayAbility](#对于gameplayability)
-    - [UGameFeatureAction_AddInputConfig 储存配置的FKey按键到InputAction的映射](#ugamefeatureaction_addinputconfig-储存配置的fkey按键到inputaction的映射)
-    - [ULyraHeroComponent::InitializePlayerInput 按键绑定入口](#ulyraherocomponentinitializeplayerinput-按键绑定入口)
-        - [ULyraInputComponent::AddInputMappings 绑定FKey到InputAction的映射](#ulyrainputcomponentaddinputmappings-绑定fkey到inputaction的映射)
-        - [ULyraInputComponent::BindNativeAction 将UInputAction绑定到代理函数](#ulyrainputcomponentbindnativeaction-将uinputaction绑定到代理函数)
+  - [目录](#目录)
+  - [概述](#概述)
+    - [核心函数](#核心函数)
+    - [整体流程](#整体流程)
+  - [创建Class](#创建class)
+    - [勾选插件](#勾选插件)
+    - [要创建的组件](#要创建的组件)
+    - [要创建的蓝图](#要创建的蓝图)
+  - [配置位置](#配置位置)
+    - [Defaultinput.ini](#defaultinputini)
+    - [配置FKey(按键)到InputAction的映射](#配置fkey按键到inputaction的映射)
+      - [ShooterCore](#shootercore)
+      - [PMI_Default_KBM](#pmi_default_kbm)
+      - [IMC_Default_KBM 配置FKey(按键)到InputAction的映射](#imc_default_kbm-配置fkey按键到inputaction的映射)
+    - [配置InputAction到GameplayTag的映射](#配置inputaction到gameplaytag的映射)
+      - [L_Expanse地图的WorldSettings](#l_expanse地图的worldsettings)
+      - [B_ShooterGame_Elimination 游戏体验](#b_shootergame_elimination-游戏体验)
+      - [HeroData_ShooterGame 角色配置](#herodata_shootergame-角色配置)
+      - [InputData_Hero 配置GameplayTag到InputAction的映射](#inputdata_hero-配置gameplaytag到inputaction的映射)
+      - [AbilitySet_ShooterHero](#abilityset_shooterhero)
+    - [配置GameplayTag到按键回调函数的映射](#配置gameplaytag到按键回调函数的映射)
+      - [对于移动](#对于移动)
+      - [对于GameplayAbility](#对于gameplayability)
+  - [UGameFeatureAction_AddInputConfig 储存配置的FKey按键到InputAction的映射](#ugamefeatureaction_addinputconfig-储存配置的fkey按键到inputaction的映射)
+  - [ULyraHeroComponent::InitializePlayerInput 按键绑定入口](#ulyraherocomponentinitializeplayerinput-按键绑定入口)
+    - [ULyraInputComponent::AddInputMappings 绑定FKey到InputAction的映射](#ulyrainputcomponentaddinputmappings-绑定fkey到inputaction的映射)
+    - [ULyraInputComponent::BindNativeAction 将UInputAction绑定到代理函数](#ulyrainputcomponentbindnativeaction-将uinputaction绑定到代理函数)
 
 ## 概述
 ### 核心函数
@@ -63,7 +64,7 @@ ULyraHeroComponent: B_Hero_ShooterMannequin继承的B_Hero_Default蓝图挂载�
 
 ### 要创建的蓝图
 B_Hero_ShooterMannequin, B_Hero_Default: 角色类  
-InputData_Hero: 配置InputAction -> InputTag的映射  
+InputData_Hero: 配置InputTag -> InputAction的映射  
 PMI_Default_KBM, IMC_Default_KBM: 配置按键 -> InputAction的映射  
 
 ## 配置位置
@@ -73,7 +74,7 @@ DefaultInputComponentClass=/Script/LyraGame.LyraInputComponent
 DefaultPlayerInputClass=/Script/EnhancedInput.EnhancedPlayerInput
 ```
 
-### 配置InputAction到FKey(按键)的映射
+### 配置FKey(按键)到InputAction的映射
 #### ShooterCore
 Plugins/GameFeatures/ShooterCore 的 GameFeatureData  
 Actions数组中添加GameFeayureAction_AddInputConfig  
@@ -108,11 +109,22 @@ DefaultPawnData: HeroData_ShooterGame
 PawnClass: B_Hero_ShooterMannequin  
 InputConfig: InputData_Hero  
 
-#### InputData_Hero 配置InputAction到GameplayTag的映射
+#### InputData_Hero 配置GameplayTag到InputAction的映射
+类型: LyraInputConfig  
+配置: NativeInputAction和AbilityInputAction的 GameplayTag -> InputAction 映射  
+
+对于NativeInputAction,代码里直接写死Tag对应的Func. 通过这里的配置,找到Tag对应的InputAction绑定Func  
+对于AbilityInputAction,代码里Tag是Func的可变参数. 通过这里的配置,按键回调函数的参数为GA对应的InputTag  
+
 UInputAction继承自UDataAsset,由开发者自己在蓝图中创建若干实例,表示一个个的输入事件  
 其中一个是:  
 InputAction: IA_Move  
 InputTag: InputTag.Move  
+
+#### AbilitySet_ShooterHero
+类型: LyraAbilitySet  
+配置要赋予的GA数组和每个GA对应的InputTag  
+在赋予GA时,将InputTag加到AbilitySpec.DynamicAbilityTags  
 
 ### 配置GameplayTag到按键回调函数的映射
 #### 对于移动
