@@ -5,6 +5,7 @@
   - [添加引用资源](#添加引用资源)
     - [添加DataAsset](#添加dataasset)
     - [添加lua文件夹](#添加lua文件夹)
+    - [报错](#报错)
 
 ## 添加引用资源
 ### 添加DataAsset  
@@ -20,3 +21,8 @@ Project Settings -> Project -> Packaging
 
 Additional Asset Directories To Cook 数组加上(要手动添加的)蓝图所在的文件夹,如 /Game/Config  
 Additional Non-Asset Directories to Cook 数组加上 /Game/Config  
+
+### 报错
+UATHelper: Packaging (Windows): LogInit: Display: LogAssetManager: Error: Cannot specify Rules overrides for Labels in ini! You most modify asset PrimaryAssetLabel:PrimaryDataAssetForPackage!
+
+删掉PrimaryDataAssetForPackage  
